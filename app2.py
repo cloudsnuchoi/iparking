@@ -14,8 +14,12 @@ st.write("아래 폼에 이름과 차량 번호를 입력해주세요.")
 name = st.text_input("이름:", placeholder="예: 홍길동")
 car_number = st.text_input("차량 번호:", placeholder="예: 12가 3456")
 
-# 제출 버튼 (이미 제출된 경우 비활성화)
-submit = st.button("제출", disabled=st.session_state.submitted)
+# 제출 버튼과 안내 문구를 나란히 배치
+col1, col2 = st.columns([1, 4])
+with col1:
+    submit = st.button("등록", disabled=st.session_state.submitted)
+with col2:
+    st.write("⚠️ 제출 버튼을 누르신 후 2초 가량 기다리시면 '차량이 등록되었습니다'라는 문구가 뜰 때까지 기다려주세요.")
 
 if submit and not st.session_state.submitted:
     if name and car_number:
@@ -25,10 +29,10 @@ if submit and not st.session_state.submitted:
             json={"name": name, "carNumber": car_number, "timestamp": str(datetime.datetime.now())},
         )
         if response.status_code == 200:
-            st.success("정보가 성공적으로 저장되었습니다! 🎉")
+            st.success("차량이 등록되었습니다! 🎉")
             st.session_state.submitted = True  # 제출 상태를 True로 변경
         else:
-            st.error("저장에 실패했습니다. 다시 시도해주세요.")
+            st.error("등록에 실패했습니다. 다시 시도해주세요.")
     else:
         st.warning("모든 필드를 채워주세요.")
 
