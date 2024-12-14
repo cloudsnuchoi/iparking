@@ -19,7 +19,7 @@ col1, col2 = st.columns([1, 4])
 with col1:
     submit = st.button("등록", disabled=st.session_state.submitted)
 with col2:
-    st.write("⚠️ 제출 버튼을 누르신 후 '차량이 등록되었습니다'라는 문구가 뜰 때까지 기다려주세요.")
+    st.write("⚠️ 등록 버튼을 누르신 후 '차량이 등록되었습니다'라는 문구가 뜰 때까지 기다려주세요.")
 
 if submit and not st.session_state.submitted:
     if name and car_number:
