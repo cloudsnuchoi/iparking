@@ -2,9 +2,11 @@ import streamlit as st
 import requests
 import datetime
 
-# 세션 상태 초기화 (제출 상태 추적)
+# 세션 상태 초기화 (제출 상태 및 처리 중 상태 추적)
 if 'submitted' not in st.session_state:
     st.session_state.submitted = False
+if 'processing' not in st.session_state:
+    st.session_state.processing = False
 
 # Streamlit UI
 st.title("PLC 차량 등록 🚗")
@@ -17,22 +19,29 @@ car_number = st.text_input("차량 번호:", placeholder="예: 12가 3456")
 # 제출 버튼과 안내 문구를 나란히 배치
 col1, col2 = st.columns([1, 4])
 with col1:
-    submit = st.button("등록", disabled=st.session_state.submitted)
+    submit = st.button("등록", disabled=st.session_state.submitted or st.session_state.processing)
 with col2:
-    st.write("⚠️ 등록 버튼을 누르신 후 '차량이 등록되었습니다'라는 문구가 뜰 때까지 기다려주세요.")
+    st.write("⚠️ 등록 버튼을 누르신 후 2초 가량 기다리시면 '차량이 등록되었습니다'라는 문구가 뜰 때까지 기다려주세요.")
 
-if submit and not st.session_state.submitted:
+if submit and not st.session_state.submitted and not st.session_state.processing:
     if name and car_number:
-        # Google Apps Script로 데이터 전송
-        response = requests.post(
-            "https://script.google.com/macros/s/AKfycbwCPyjV8cUAvopipzo9B2L-fU5zh2EwmUQ2nApPyurw8zQns5hT5_NeCbBWQW_8RDEITg/exec",
-            json={"name": name, "carNumber": car_number, "timestamp": str(datetime.datetime.now())},
-        )
-        if response.status_code == 200:
-            st.success("차량이 등록되었습니다! 🎉")
-            st.session_state.submitted = True  # 제출 상태를 True로 변경
-        else:
-            st.error("등록에 실패했습니다. 다시 시도해주세요.")
+        try:
+            # 처리 중 상태로 설정
+            st.session_state.processing = True
+            
+            # Google Apps Script로 데이터 전송
+            response = requests.post(
+                "https://script.google.com/macros/s/AKfycbwCPyjV8cUAvopipzo9B2L-fU5zh2EwmUQ2nApPyurw8zQns5hT5_NeCbBWQW_8RDEITg/exec",
+                json={"name": name, "carNumber": car_number, "timestamp": str(datetime.datetime.now())},
+            )
+            if response.status_code == 200:
+                st.success("차량이 등록되었습니다! 🎉")
+                st.session_state.submitted = True
+            else:
+                st.error("등록에 실패했습니다. 다시 시도해주세요.")
+        finally:
+            # 처리가 완료되면 processing 상태를 False로 변경
+            st.session_state.processing = False
     else:
         st.warning("모든 필드를 채워주세요.")
 
