@@ -175,7 +175,7 @@ col1, col2 = st.columns([1, 4])
 with col1:
     submit = st.button("등록", disabled=st.session_state.submitted or st.session_state.processing)
 with col2:
-    st.write("⚠️ 등록 버튼을 누르신 후 2초 가량 기다리시면 '차량이 등록되었습니다'라는 문구가 뜰 때까지 기다려주세요.")
+    st.write("⚠️ 등록 버튼을 누르신 후 5초 가량 기다리시면 '차량이 등록되었습니다'라는 문구가 뜰 때까지 기다려주세요.")
     st.write("등록 시 주차 3시간 무료제공됩니다.")
 
 
