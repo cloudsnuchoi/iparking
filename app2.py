@@ -15,51 +15,64 @@ st.markdown("""
     /* 전체 페이지 배경색 설정 */
     .stApp {
         background-color: #2A3246 !important;
-        color: white;
     }
     
-    /* Streamlit 기본 요소들의 배경색도 변경 */
-    .stTextInput, .stButton, .stSelectbox {
-        background-color: #2A3246;
+    /* 모든 div 요소에 대한 배경색 설정 */
+    div.stMarkdown,
+    div.stButton,
+    div.stTextInput,
+    div.row-widget,
+    div.stAlert,
+    div[data-testid="stMarkdownContainer"],
+    div[data-testid="stVerticalBlock"] {
+        background-color: #2A3246 !important;
     }
     
+    /* 로고 컨테이너 */
     .logo-container {
         text-align: center;
         padding: 20px 0;
-        background-color: #2A3246;
+        background-color: #2A3246 !important;
     }
     
-    .logo-image {
-        max-width: 300px;  /* 로고 크기 조절 */
-        margin-bottom: 20px;
-    }
-    
-    /* 기존 스타일 유지 */
-    .title {
-        color: white;
-        font-size: 42px;
-        font-weight: bold;
-        padding: 20px 0;
-        text-align: center;
-        background-color: #4F6380;
-        border-radius: 10px;
-        margin-bottom: 30px;
-    }
-    
-    /* 입력 필드 배경색 설정 */
-    div[data-baseweb="base-input"] {
+    /* 입력 필드 스타일 */
+    .stTextInput > div > div > input {
         background-color: #4F6380 !important;
+        color: white !important;
     }
     
-    /* 버튼 배경색 설정 */
+    /* 버튼 스타일 */
     .stButton > button {
         background-color: #4F6380 !important;
         color: white !important;
     }
     
-    /* 기타 Streamlit 요소들의 배경색 설정 */
+    /* 경고/성공 메시지 스타일 */
     .stAlert {
         background-color: #4F6380 !important;
+        color: white !important;
+    }
+    
+    /* 기타 텍스트 색상 */
+    .stMarkdown {
+        color: white !important;
+    }
+    
+    /* 제목 스타일 */
+    .title {
+        color: white !important;
+        font-size: 42px;
+        font-weight: bold;
+        padding: 20px 0;
+        text-align: center;
+        background-color: #4F6380 !important;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+    
+    /* iframe 배경색 설정 */
+    iframe {
+        background-color: #2A3246 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -68,7 +81,7 @@ st.markdown("""
 try:
     logo = Image.open('PLC logo.png')
     st.markdown('<div class="logo-container">', unsafe_allow_html=True)
-    st.image(logo, use_column_width=False, width=300)  # 로고 크기 조절
+    st.image(logo, width=300, use_container_width=False)  # use_column_width 대신 use_container_width 사용
     st.markdown('</div>', unsafe_allow_html=True)
 except Exception as e:
     st.error("로고 이미지를 불러오는데 실패했습니다.")
