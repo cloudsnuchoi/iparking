@@ -4,6 +4,74 @@ import datetime
 from datetime import timedelta
 import pytz
 import re
+from PIL import Image
+
+# 페이지 기본 설정
+st.set_page_config(page_title="PLC 주차 등록", layout="wide")
+
+# CSS 스타일 정의
+st.markdown("""
+<style>
+    /* 전체 페이지 배경색 설정 */
+    .stApp {
+        background-color: #2A3246 !important;
+        color: white;
+    }
+    
+    /* Streamlit 기본 요소들의 배경색도 변경 */
+    .stTextInput, .stButton, .stSelectbox {
+        background-color: #2A3246;
+    }
+    
+    .logo-container {
+        text-align: center;
+        padding: 20px 0;
+        background-color: #2A3246;
+    }
+    
+    .logo-image {
+        max-width: 300px;  /* 로고 크기 조절 */
+        margin-bottom: 20px;
+    }
+    
+    /* 기존 스타일 유지 */
+    .title {
+        color: white;
+        font-size: 42px;
+        font-weight: bold;
+        padding: 20px 0;
+        text-align: center;
+        background-color: #4F6380;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+    
+    /* 입력 필드 배경색 설정 */
+    div[data-baseweb="base-input"] {
+        background-color: #4F6380 !important;
+    }
+    
+    /* 버튼 배경색 설정 */
+    .stButton > button {
+        background-color: #4F6380 !important;
+        color: white !important;
+    }
+    
+    /* 기타 Streamlit 요소들의 배경색 설정 */
+    .stAlert {
+        background-color: #4F6380 !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# 로고 추가
+try:
+    logo = Image.open('PLC logo.png')
+    st.markdown('<div class="logo-container">', unsafe_allow_html=True)
+    st.image(logo, use_column_width=False, width=300)  # 로고 크기 조절
+    st.markdown('</div>', unsafe_allow_html=True)
+except Exception as e:
+    st.error("로고 이미지를 불러오는데 실패했습니다.")
 
 # 한국 시간대 설정
 KST = pytz.timezone('Asia/Seoul')
