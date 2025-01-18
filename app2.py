@@ -81,7 +81,7 @@ st.markdown("""
 try:
     logo = Image.open('PLC logo.png')
     st.markdown('<div class="logo-container">', unsafe_allow_html=True)
-    st.image(logo, width=700, use_container_width=False)  # 로고 크기를 300에서 500으로 증가
+    st.image(logo, width=500, use_container_width=False)  # 로고 크기를 300에서 500으로 증가
     st.markdown('</div>', unsafe_allow_html=True)
 except Exception as e:
     st.error("로고 이미지를 불러오는데 실패했습니다.")
