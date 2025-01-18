@@ -71,8 +71,7 @@ if not is_operating_hours and not st.session_state.admin_mode:
     st.write("오후등록: 14시30분-17시")
     st.write("")
     st.write("오전과 오후 중 한 번만 등록 가능합니다.")
-    st.write("중복 등록 안 됩니다.")
-    st.write("등록하셔도 시간 추가되지 않습니다.")
+    st.write("등록 시 3시간 추가됩니다. 무료 주차 1시간 포함 총 4시간 주차 가능합니다.")
     st.stop()
 
 # Streamlit UI
