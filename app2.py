@@ -128,6 +128,34 @@ is_operating_hours = is_morning_hours or is_afternoon_hours
 # 현재 시간 표시
 st.write(f"현재 시간: {current_time.strftime('%H:%M')} (KST)")
 
+# 빈 공간과 구분선 추가 (항상 표시)
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+st.markdown("---")
+
+# 관리자 모드 UI를 먼저 배치 (항상 표시)
+col1, col2, col3 = st.columns([6, 2, 2])
+with col3:
+    if st.button("관리자 모드" if not st.session_state.admin_mode else "일반 모드로 전환"):
+        if not st.session_state.admin_mode:
+            admin_password = st.text_input("관리자 비밀번호를 입력하세요:", type="password")
+            if admin_password == "2580":
+                st.session_state.admin_mode = True
+                st.experimental_rerun()
+            elif admin_password:
+                st.error("비밀번호가 올바르지 않습니다.")
+        else:
+            st.session_state.admin_mode = False
+            st.experimental_rerun()
+
+# 관리자 모드 활성화 표시를 버튼 옆에 배치
+with col2:
+    if st.session_state.admin_mode:
+        st.warning("⚠️ 관리자 모드 활성화됨")
+
 # 운영 시간이 아니고 관리자 모드가 아닐 경우 안내 메시지 표시
 if not is_operating_hours and not st.session_state.admin_mode:
     st.title("주차 등록 불가 시간 ⚠️")
@@ -213,33 +241,3 @@ if submit and not st.session_state.submitted and not st.session_state.processing
 # 제출 완료 후 메시지 표시
 if st.session_state.submitted:
     st.info("이미 제출이 완료되었습니다. 추가 제출이 필요한 경우 페이지를 새로고침해주세요.")
-
-# 빈 공간 추가
-st.write("")
-st.write("")
-st.write("")
-st.write("")
-st.write("")
-
-# 구분선 추가
-st.markdown("---")
-
-# 관리자 모드 UI를 하단에 배치
-col1, col2, col3 = st.columns([6, 2, 2])
-with col3:
-    if st.button("관리자 모드" if not st.session_state.admin_mode else "일반 모드로 전환"):
-        if not st.session_state.admin_mode:
-            admin_password = st.text_input("관리자 비밀번호를 입력하세요:", type="password")
-            if admin_password == "2580":
-                st.session_state.admin_mode = True
-                st.experimental_rerun()
-            elif admin_password:
-                st.error("비밀번호가 올바르지 않습니다.")
-        else:
-            st.session_state.admin_mode = False
-            st.experimental_rerun()
-
-# 관리자 모드 활성화 표시를 버튼 옆에 배치
-with col2:
-    if st.session_state.admin_mode:
-        st.warning("⚠️ 관리자 모드 활성화됨")
