@@ -2,6 +2,31 @@ import streamlit as st
 import requests
 import datetime
 
+# 운영 시간 설정
+MORNING_START = datetime.time(9, 0)   # 오전 9시
+MORNING_END = datetime.time(13, 0)    # 오후 1시
+AFTERNOON_START = datetime.time(14, 30)  # 오후 2시 30분
+AFTERNOON_END = datetime.time(17, 0)   # 오후 5시
+
+# 현재 시간이 운영 시간 내인지 확인
+current_time = datetime.datetime.now().time()
+is_morning_hours = MORNING_START <= current_time <= MORNING_END
+is_afternoon_hours = AFTERNOON_START <= current_time <= AFTERNOON_END
+is_operating_hours = is_morning_hours or is_afternoon_hours
+
+# 운영 시간이 아닐 경우 안내 메시지 표시
+if not is_operating_hours:
+    st.title("주차 등록 불가 시간 ⚠️")
+    st.write("지금은 주차등록 시간대가 아닙니다. 아래의 시간대에 접속해서 등록을 해주시기 바랍니다.")
+    st.write("")
+    st.write("오전등록: 09시-13시")
+    st.write("오후등록: 14시30분-17시")
+    st.write("")
+    st.write("오전과 오후 중 한 번만 등록 가능합니다.")
+    st.write("중복 등록 안 됩니다.")
+    st.write("등록하셔도 시간 추가되지 않습니다.")
+    st.stop()  # 여기서 앱 실행을 중단
+
 # 세션 상태 초기화 (제출 상태 및 처리 중 상태 추적)
 if 'submitted' not in st.session_state:
     st.session_state.submitted = False
