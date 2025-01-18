@@ -14,7 +14,7 @@ st.markdown("""
 <style>
     /* 전체 페이지 배경색 설정 */
     .stApp {
-        background-color: #2A3246 !important;
+        background-color: #323648 !important;
     }
     
     /* 모든 div 요소에 대한 배경색 설정 */
@@ -25,14 +25,14 @@ st.markdown("""
     div.stAlert,
     div[data-testid="stMarkdownContainer"],
     div[data-testid="stVerticalBlock"] {
-        background-color: #2A3246 !important;
+        background-color: #323648 !important;
     }
     
     /* 로고 컨테이너 */
     .logo-container {
         text-align: center;
         padding: 20px 0;
-        background-color: #2A3246 !important;
+        background-color: #323648 !important;
     }
     
     /* 입력 필드 스타일 */
@@ -72,7 +72,7 @@ st.markdown("""
     
     /* iframe 배경색 설정 */
     iframe {
-        background-color: #2A3246 !important;
+        background-color: #323648 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -81,7 +81,7 @@ st.markdown("""
 try:
     logo = Image.open('PLC logo.png')
     st.markdown('<div class="logo-container">', unsafe_allow_html=True)
-    st.image(logo, width=300, use_container_width=False)  # use_column_width 대신 use_container_width 사용
+    st.image(logo, width=700, use_container_width=False)  # 로고 크기를 300에서 500으로 증가
     st.markdown('</div>', unsafe_allow_html=True)
 except Exception as e:
     st.error("로고 이미지를 불러오는데 실패했습니다.")
