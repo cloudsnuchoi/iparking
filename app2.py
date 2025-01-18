@@ -71,7 +71,7 @@ if not is_operating_hours and not st.session_state.admin_mode:
     st.write("오후등록: 14시30분-17시")
     st.write("")
     st.write("오전과 오후 중 한 번만 등록 가능합니다.")
-    st.write("등록 시 3시간 추가됩니다. 무료 주차 1시간 포함 총 4시간 주차 가능합니다.")
+    st.write("등록 시 주차 3시간 무료제공됩니다.")
     st.stop()
 
 # Streamlit UI
@@ -95,7 +95,7 @@ with col1:
     submit = st.button("등록", disabled=st.session_state.submitted or st.session_state.processing)
 with col2:
     st.write("⚠️ 등록 버튼을 누르신 후 2초 가량 기다리시면 '차량이 등록되었습니다'라는 문구가 뜰 때까지 기다려주세요.")
-    st.write("등록 시 3시간 추가됩니다. 무료 주차 1시간 포함 총 4시간 주차 가능합니다.")
+    st.write("등록 시 주차 3시간 무료제공됩니다.")
 
 
 if submit and not st.session_state.submitted and not st.session_state.processing:
