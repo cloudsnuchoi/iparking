@@ -128,15 +128,33 @@ is_operating_hours = is_morning_hours or is_afternoon_hours
 # 현재 시간 표시
 st.write(f"현재 시간: {current_time.strftime('%H:%M')} (KST)")
 
-# 빈 공간과 구분선 추가 (항상 표시)
+# 운영 시간이 아니고 관리자 모드가 아닐 경우 안내 메시지 표시
+if not is_operating_hours and not st.session_state.admin_mode:
+    st.title("주차 등록 불가 시간 ⚠️")
+    st.write("지금은 주차등록 시간대가 아닙니다. 아래의 시간대에 접속해서 등록을 해주시기 바랍니다.")
+    st.write("")
+    st.write("오전등록: 09시-13시")
+    st.write("오후등록: 14시30분-17시")
+    st.write("")
+    st.write("오전과 오후 중 한 번만 등록 가능합니다.")
+    st.write("등록 시 주차 3시간 무료제공됩니다.")
+
+# 모든 UI 요소 이후에 빈 공간 추가
 st.write("")
 st.write("")
 st.write("")
 st.write("")
 st.write("")
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+
+# 구분선 추가
 st.markdown("---")
 
-# 관리자 모드 UI를 먼저 배치 (항상 표시)
+# 관리자 모드 UI를 완전 최하단에 배치
 col1, col2, col3 = st.columns([6, 2, 2])
 with col3:
     if st.button("관리자 모드" if not st.session_state.admin_mode else "일반 모드로 전환"):
@@ -156,16 +174,8 @@ with col2:
     if st.session_state.admin_mode:
         st.warning("⚠️ 관리자 모드 활성화됨")
 
-# 운영 시간이 아니고 관리자 모드가 아닐 경우 안내 메시지 표시
+# 운영 시간이 아닐 경우 여기서 중단
 if not is_operating_hours and not st.session_state.admin_mode:
-    st.title("주차 등록 불가 시간 ⚠️")
-    st.write("지금은 주차등록 시간대가 아닙니다. 아래의 시간대에 접속해서 등록을 해주시기 바랍니다.")
-    st.write("")
-    st.write("오전등록: 09시-13시")
-    st.write("오후등록: 14시30분-17시")
-    st.write("")
-    st.write("오전과 오후 중 한 번만 등록 가능합니다.")
-    st.write("등록 시 주차 3시간 무료제공됩니다.")
     st.stop()
 
 # Streamlit UI
