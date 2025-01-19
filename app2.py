@@ -131,7 +131,7 @@ is_operating_hours = is_morning_hours or is_afternoon_hours
 # 현재 시간 표시
 st.write(f"현재 시간: {current_time.strftime('%H:%M')} (KST)")
 
-# 운영 시간이 아니고 관리자 모드가 아닐 경우 안내 메시지 표시
+# 운영 시간이 아닐 경우 여기서 중단
 if not is_operating_hours and not st.session_state.admin_mode:
     st.title("주차 등록 불가 시간 ⚠️")
     st.write("지금은 주차등록 시간대가 아닙니다. 아래의 시간대에 접속해서 등록을 해주시기 바랍니다.")
@@ -141,27 +141,26 @@ if not is_operating_hours and not st.session_state.admin_mode:
     st.write("")
     st.write("오전과 오후 중 한 번만 등록 가능합니다.")
     st.write("등록 시 주차 3시간 무료제공됩니다.")
+    st.stop()
 
-# 모든 UI 요소 이후에 빈 공간 추가
-st.write("")
-st.write("")
-st.write("")
-st.write("")
-st.write("")
-st.write("")
-st.write("")
-st.write("")
-st.write("")
-st.write("")
+# 입력 폼
+name = st.text_input("이름:", placeholder="예: 홍길동")
+car_number = st.text_input("차량 번호:", placeholder="예: 12가3456 또는 123가4567")
 
-# 구분선 추가
-st.markdown("---")
+# 제출 버튼과 안내 문구를 나란히 배치
+col1, col2 = st.columns([1, 4])
+with col1:
+    submit = st.button("등록", disabled=st.session_state.submitted or st.session_state.processing)
+with col2:
+    st.write("⚠️ 등록 버튼을 누르신 후 5초 가량 기다리시면 '차량이 등록되었습니다'라는 문구가 뜰 때까지 기다려주세요.")
+    st.write("등록 시 주차 3시간 무료제공됩니다.")
 
 # 차량번호 입력 안내 메시지
 st.write("✔️ 차량번호 입력 예시:")
 st.write("- 7자리: 12가3456 (2006년 개정 번호판)")
 st.write("- 8자리: 123가4567 (2019 개정 번호판)")
 
+# 폼 제출 처리
 if submit and not st.session_state.submitted and not st.session_state.processing:
     if name and car_number:
         # 차량번호 검증
@@ -272,19 +271,3 @@ with col3:
 with col2:
     if st.session_state.admin_mode:
         st.warning("⚠️ 관리자 모드 활성화됨")
-
-# 운영 시간이 아닐 경우 여기서 중단
-if not is_operating_hours and not st.session_state.admin_mode:
-    st.stop()
-
-# 입력 폼
-name = st.text_input("이름:", placeholder="예: 홍길동")
-car_number = st.text_input("차량 번호:", placeholder="예: 12가3456 또는 123가4567")
-
-# 제출 버튼과 안내 문구를 나란히 배치
-col1, col2 = st.columns([1, 4])
-with col1:
-    submit = st.button("등록", disabled=st.session_state.submitted or st.session_state.processing)
-with col2:
-    st.write("⚠️ 등록 버튼을 누르신 후 5초 가량 기다리시면 '차량이 등록되었습니다'라는 문구가 뜰 때까지 기다려주세요.")
-    st.write("등록 시 주차 3시간 무료제공됩니다.")
