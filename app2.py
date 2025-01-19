@@ -216,32 +216,50 @@ if submit and not st.session_state.submitted and not st.session_state.processing
             st.session_state.processing = True
             
             # 중복 체크 요청
-            check_response = requests.get(
-                "https://script.google.com/macros/s/AKfycbwCPyjV8cUAvopipzo9B2L-fU5zh2EwmUQ2nApPyurw8zQns5hT5_NeCbBWQW_8RDEITg/exec",
-                params={"action": "checkDuplicate", "carNumber": standardized_number}
-            )
-            
-            if check_response.status_code == 200:
-                check_data = check_response.json()
-                if check_data.get("isDuplicate", False):
-                    st.error("이미 등록된 차량번호입니다. 중복 등록은 불가능합니다.")
+            try:
+                check_response = requests.get(
+                    "https://script.google.com/macros/s/AKfycbwCPyjV8cUAvopipzo9B2L-fU5zh2EwmUQ2nApPyurw8zQns5hT5_NeCbBWQW_8RDEITg/exec",
+                    params={"action": "checkDuplicate", "carNumber": standardized_number}
+                )
+                
+                if check_response.status_code == 200:
+                    try:
+                        check_data = check_response.json()
+                        if check_data.get("isDuplicate", False):
+                            st.error("이미 등록된 차량번호입니다. 중복 등록은 불가능합니다.")
+                            st.session_state.processing = False
+                            st.stop()
+                    except requests.exceptions.JSONDecodeError:
+                        st.error("서버 응답을 처리하는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
+                        st.session_state.processing = False
+                        st.stop()
+                else:
+                    st.error(f"서버 오류가 발생했습니다 (상태 코드: {check_response.status_code})")
                     st.session_state.processing = False
                     st.stop()
             
+            except requests.exceptions.RequestException as e:
+                st.error(f"서버 연결 중 오류가 발생했습니다: {str(e)}")
+                st.session_state.processing = False
+                st.stop()
+
             # 중복이 아닌 경우 데이터 전송
-            response = requests.post(
-                "https://script.google.com/macros/s/AKfycbwCPyjV8cUAvopipzo9B2L-fU5zh2EwmUQ2nApPyurw8zQns5hT5_NeCbBWQW_8RDEITg/exec",
-                json={
-                    "name": name, 
-                    "carNumber": standardized_number,  # 표준화된 차량번호 사용
-                    "timestamp": str(datetime.datetime.now(KST))
-                }
-            )
-            if response.status_code == 200:
-                st.success("차량이 등록되었습니다! 🎉")
-                st.session_state.submitted = True
-            else:
-                st.error("등록에 실패했습니다. 다시 시도해주세요.")
+            try:
+                response = requests.post(
+                    "https://script.google.com/macros/s/AKfycbwCPyjV8cUAvopipzo9B2L-fU5zh2EwmUQ2nApPyurw8zQns5hT5_NeCbBWQW_8RDEITg/exec",
+                    json={
+                        "name": name, 
+                        "carNumber": standardized_number,
+                        "timestamp": str(datetime.datetime.now(KST))
+                    }
+                )
+                if response.status_code == 200:
+                    st.success("차량이 등록되었습니다! 🎉")
+                    st.session_state.submitted = True
+                else:
+                    st.error(f"등록에 실패했습니다 (상태 코드: {response.status_code}). 다시 시도해주세요.")
+            except requests.exceptions.RequestException as e:
+                st.error(f"데이터 전송 중 오류가 발생했습니다: {str(e)}")
         finally:
             # 처리가 완료되면 processing 상태를 False로 변경
             st.session_state.processing = False
