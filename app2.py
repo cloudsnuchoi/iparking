@@ -81,10 +81,13 @@ st.markdown("""
 try:
     logo = Image.open('PLC logo.png')
     st.markdown('<div class="logo-container">', unsafe_allow_html=True)
-    st.image(logo, width=500, use_container_width=False)  # 로고 크기를 300에서 500으로 증가
+    st.image(logo, width=500, use_container_width=False)
     st.markdown('</div>', unsafe_allow_html=True)
 except Exception as e:
     st.error("로고 이미지를 불러오는데 실패했습니다.")
+
+# Streamlit UI
+st.title("PLC 차량 등록 🚗")
 
 # 한국 시간대 설정
 KST = pytz.timezone('Asia/Seoul')
@@ -177,14 +180,6 @@ with col2:
 # 운영 시간이 아닐 경우 여기서 중단
 if not is_operating_hours and not st.session_state.admin_mode:
     st.stop()
-
-# Streamlit UI
-st.title("PLC 차량 등록 🚗")
-# 여기서 관리자 모드 경고 제거
-# if st.session_state.admin_mode:
-#     st.warning("⚠️ 관리자 모드 활성화됨")
-
-st.write("아래 폼에 이름과 차량 번호를 입력해주세요.")
 
 # 입력 폼
 name = st.text_input("이름:", placeholder="예: 홍길동")
