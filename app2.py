@@ -224,18 +224,23 @@ if submit and not st.session_state.submitted and not st.session_state.processing
                 
                 if check_response.status_code == 200:
                     try:
-                        # 응답 내용 확인
                         response_text = check_response.text
-                        if not response_text:
-                            st.error("서버로부터 빈 응답을 받았습니다. 잠시 후 다시 시도해주세요.")
-                            st.session_state.processing = False
-                            st.stop()
-                            
-                        check_data = check_response.json()
-                        if check_data.get("isDuplicate", False):
-                            st.error("이미 등록된 차량번호입니다. 중복 등록은 불가능합니다.")
-                            st.session_state.processing = False
-                            st.stop()
+                        # 스프레드시트가 비어있는 경우 (첫 번째 등록인 경우)
+                        if "Exception: The number of rows in the range must be at least 1" in response_text:
+                            # 첫 번째 등록이므로 중복 체크를 통과하고 계속 진행
+                            pass
+                        else:
+                            try:
+                                check_data = check_response.json()
+                                if check_data.get("isDuplicate", False):
+                                    st.error("이미 등록된 차량번호입니다. 중복 등록은 불가능합니다.")
+                                    st.session_state.processing = False
+                                    st.stop()
+                            except requests.exceptions.JSONDecodeError:
+                                if "Error" in response_text and not "rows in the range" in response_text:
+                                    st.error(f"서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
+                                    st.session_state.processing = False
+                                    st.stop()
                     except requests.exceptions.JSONDecodeError:
                         st.error(f"서버 응답을 처리하는 중 오류가 발생했습니다. 응답: {response_text}")
                         st.session_state.processing = False
@@ -261,17 +266,12 @@ if submit and not st.session_state.submitted and not st.session_state.processing
                     }
                 )
                 if response.status_code == 200:
-                    try:
-                        response_data = response.json()
+                    response_text = response.text
+                    if "Error" not in response_text:
                         st.success("차량이 등록되었습니다! 🎉")
                         st.session_state.submitted = True
-                    except requests.exceptions.JSONDecodeError:
-                        response_text = response.text
-                        if "success" in response_text.lower():
-                            st.success("차량이 등록되었습니다! 🎉")
-                            st.session_state.submitted = True
-                        else:
-                            st.error(f"등록은 완료되었으나 응답 처리 중 오류가 발생했습니다. 응답: {response_text}")
+                    else:
+                        st.error(f"등록 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
                 else:
                     st.error(f"등록에 실패했습니다 (상태 코드: {response.status_code}). 다시 시도해주세요.")
             except requests.exceptions.RequestException as e:
