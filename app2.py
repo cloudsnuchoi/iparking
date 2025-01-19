@@ -157,42 +157,6 @@ st.write("")
 # 구분선 추가
 st.markdown("---")
 
-# 관리자 모드 UI를 완전 최하단에 배치
-col1, col2, col3 = st.columns([6, 2, 2])
-with col3:
-    if st.button("관리자 모드" if not st.session_state.admin_mode else "일반 모드로 전환"):
-        if not st.session_state.admin_mode:
-            admin_password = st.text_input("관리자 비밀번호를 입력하세요:", type="password")
-            if admin_password == "2580":
-                st.session_state.admin_mode = True
-                st.experimental_rerun()
-            elif admin_password:
-                st.error("비밀번호가 올바르지 않습니다.")
-        else:
-            st.session_state.admin_mode = False
-            st.experimental_rerun()
-
-# 관리자 모드 활성화 표시를 버튼 옆에 배치
-with col2:
-    if st.session_state.admin_mode:
-        st.warning("⚠️ 관리자 모드 활성화됨")
-
-# 운영 시간이 아닐 경우 여기서 중단
-if not is_operating_hours and not st.session_state.admin_mode:
-    st.stop()
-
-# 입력 폼
-name = st.text_input("이름:", placeholder="예: 홍길동")
-car_number = st.text_input("차량 번호:", placeholder="예: 12가3456 또는 123가4567")
-
-# 제출 버튼과 안내 문구를 나란히 배치
-col1, col2 = st.columns([1, 4])
-with col1:
-    submit = st.button("등록", disabled=st.session_state.submitted or st.session_state.processing)
-with col2:
-    st.write("⚠️ 등록 버튼을 누르신 후 5초 가량 기다리시면 '차량이 등록되었습니다'라는 문구가 뜰 때까지 기다려주세요.")
-    st.write("등록 시 주차 3시간 무료제공됩니다.")
-
 # 차량번호 입력 안내 메시지
 st.write("✔️ 차량번호 입력 예시:")
 st.write("- 7자리: 12가3456 (2006년 개정 번호판)")
@@ -280,3 +244,47 @@ if submit and not st.session_state.submitted and not st.session_state.processing
 # 제출 완료 후 메시지 표시
 if st.session_state.submitted:
     st.info("이미 제출이 완료되었습니다. 추가 제출이 필요한 경우 페이지를 새로고침해주세요.")
+
+# 빈 공간 추가
+st.write("")
+st.write("")
+st.write("")
+
+# 구분선 추가
+st.markdown("---")
+
+# 관리자 모드 UI를 최하단에 배치
+col1, col2, col3 = st.columns([6, 2, 2])
+with col3:
+    if st.button("관리자 모드" if not st.session_state.admin_mode else "일반 모드로 전환"):
+        if not st.session_state.admin_mode:
+            admin_password = st.text_input("관리자 비밀번호를 입력하세요:", type="password")
+            if admin_password == "2580":
+                st.session_state.admin_mode = True
+                st.rerun()
+            elif admin_password:
+                st.error("비밀번호가 올바르지 않습니다.")
+        else:
+            st.session_state.admin_mode = False
+            st.rerun()
+
+# 관리자 모드 활성화 표시를 버튼 옆에 배치
+with col2:
+    if st.session_state.admin_mode:
+        st.warning("⚠️ 관리자 모드 활성화됨")
+
+# 운영 시간이 아닐 경우 여기서 중단
+if not is_operating_hours and not st.session_state.admin_mode:
+    st.stop()
+
+# 입력 폼
+name = st.text_input("이름:", placeholder="예: 홍길동")
+car_number = st.text_input("차량 번호:", placeholder="예: 12가3456 또는 123가4567")
+
+# 제출 버튼과 안내 문구를 나란히 배치
+col1, col2 = st.columns([1, 4])
+with col1:
+    submit = st.button("등록", disabled=st.session_state.submitted or st.session_state.processing)
+with col2:
+    st.write("⚠️ 등록 버튼을 누르신 후 5초 가량 기다리시면 '차량이 등록되었습니다'라는 문구가 뜰 때까지 기다려주세요.")
+    st.write("등록 시 주차 3시간 무료제공됩니다.")
