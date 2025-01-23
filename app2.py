@@ -123,21 +123,28 @@ AFTERNOON_START = datetime.time(14, 30)  # 오후 2시 30분
 AFTERNOON_END = datetime.time(17, 0)   # 오후 5시
 
 # 현재 한국 시간 가져오기
-current_time = datetime.datetime.now(KST).time()
-is_morning_hours = MORNING_START <= current_time <= MORNING_END
-is_afternoon_hours = AFTERNOON_START <= current_time <= AFTERNOON_END
-is_operating_hours = is_morning_hours or is_afternoon_hours
+current_time = datetime.datetime.now(KST)
+current_weekday = current_time.weekday()  # 0=월요일, 3=목요일, 5=토요일
+is_morning_hours = MORNING_START <= current_time.time() <= MORNING_END
+is_afternoon_hours = AFTERNOON_START <= current_time.time() <= AFTERNOON_END
+is_operating_hours = (
+    is_morning_hours or 
+    is_afternoon_hours or 
+    current_weekday == 3 or  # 목요일
+    current_weekday == 5     # 토요일
+)
 
 # 현재 시간 표시
 st.write(f"현재 시간: {current_time.strftime('%H:%M')} (KST)")
 
-# 운영 시간이 아닐 경우 여기서 중단
+# 운영 시간이 아닐 경우 여기서 중단 (목요일, 토요일 제외)
 if not is_operating_hours and not st.session_state.admin_mode:
     st.title("주차 등록 불가 시간 ⚠️")
     st.write("지금은 주차등록 시간대가 아닙니다. 아래의 시간대에 접속해서 등록을 해주시기 바랍니다.")
     st.write("")
     st.write("오전등록: 09시-13시")
     st.write("오후등록: 14시30분-17시")
+    st.write("목요일, 토요일: 시간제한 없음")  # 토요일 추가
     st.write("")
     st.write("오전과 오후 중 한 번만 등록 가능합니다.")
     st.write("등록 시 주차 3시간 무료제공됩니다.")
