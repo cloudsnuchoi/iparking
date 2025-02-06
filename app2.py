@@ -191,13 +191,20 @@ col1, col2 = st.columns([1, 4])
 with col1:
     submit = st.button("등록", disabled=st.session_state.submitted or st.session_state.processing)
 with col2:
-    st.write("⚠️ 등록 버튼을 누르신 후 5초 가량 기다리시면 '차량이 등록되었습니다'라는 문구가 뜰 때까지 기다려주세요.")
-    st.write("등록 시 주차 3시간 무료제공됩니다.")
+    st.markdown('<div class="important-notice">⚠️ 등록 버튼을 누르신 후 5초 가량 기다리시면 \'차량이 등록되었습니다\'라는 문구가 뜰 때까지 기다려주세요.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="important-notice">등록 시 주차 3시간 무료제공됩니다.</div>', unsafe_allow_html=True)
+
+# 처리 중일 때 스피너 표시 (버튼 바로 아래)
+if st.session_state.processing:
+    st.markdown('<div style="text-align: center; margin: 20px 0;">', unsafe_allow_html=True)
+    with st.spinner(""):
+        st.markdown('<div class="spinner-text">차량을 등록하는 중입니다...</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # 차량번호 입력 안내 메시지
-st.write("✔️ 차량번호 입력 예시:")
-st.write("- 7자리: 12가3456 (2006년 개정 번호판)")
-st.write("- 8자리: 123가4567 (2019 개정 번호판)")
+st.markdown('<div class="important-notice">✔️ 차량번호 입력 예시:</div>', unsafe_allow_html=True)
+st.markdown('<div class="important-notice">- 7자리: 12가3456 (2006년 개정 번호판)</div>', unsafe_allow_html=True)
+st.markdown('<div class="important-notice">- 8자리: 123가4567 (2019 개정 번호판)</div>', unsafe_allow_html=True)
 
 # 폼 제출 처리
 if submit and not st.session_state.submitted and not st.session_state.processing:
@@ -212,49 +219,45 @@ if submit and not st.session_state.submitted and not st.session_state.processing
             # 처리 중 상태로 설정
             st.session_state.processing = True
             
-            # 중앙에 큰 스피너 표시
-            with st.spinner(""):
-                st.markdown('<div class="spinner-text">차량을 등록하는 중입니다...</div>', unsafe_allow_html=True)
+            # 중복 체크 요청
+            try:
+                check_response = requests.get(
+                    "https://script.google.com/macros/s/AKfycbwCPyjV8cUAvopipzo9B2L-fU5zh2EwmUQ2nApPyurw8zQns5hT5_NeCbBWQW_8RDEITg/exec",
+                    params={"action": "checkDuplicate", "carNumber": standardized_number}
+                )
                 
-                # 중복 체크 요청
-                try:
-                    check_response = requests.get(
-                        "https://script.google.com/macros/s/AKfycbwCPyjV8cUAvopipzo9B2L-fU5zh2EwmUQ2nApPyurw8zQns5hT5_NeCbBWQW_8RDEITg/exec",
-                        params={"action": "checkDuplicate", "carNumber": standardized_number}
-                    )
-                    
-                    if check_response.status_code == 200:
-                        try:
-                            response_text = check_response.text
-                            # 스프레드시트가 비어있는 경우 (첫 번째 등록인 경우)
-                            if "Exception: The number of rows in the range must be at least 1" in response_text:
-                                # 첫 번째 등록이므로 중복 체크를 통과하고 계속 진행
-                                pass
-                            else:
-                                try:
-                                    check_data = check_response.json()
-                                    if check_data.get("isDuplicate", False):
-                                        st.error("이미 등록된 차량번호입니다. 중복 등록은 불가능합니다.")
-                                        st.session_state.processing = False
-                                        st.stop()
-                                except requests.exceptions.JSONDecodeError:
-                                    if "Error" in response_text and not "rows in the range" in response_text:
-                                        st.error(f"서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
-                                        st.session_state.processing = False
-                                        st.stop()
-                        except requests.exceptions.JSONDecodeError:
-                            st.error(f"서버 응답을 처리하는 중 오류가 발생했습니다. 응답: {response_text}")
-                            st.session_state.processing = False
-                            st.stop()
-                    else:
-                        st.error(f"서버 오류가 발생했습니다 (상태 코드: {check_response.status_code})")
+                if check_response.status_code == 200:
+                    try:
+                        response_text = check_response.text
+                        # 스프레드시트가 비어있는 경우 (첫 번째 등록인 경우)
+                        if "Exception: The number of rows in the range must be at least 1" in response_text:
+                            # 첫 번째 등록이므로 중복 체크를 통과하고 계속 진행
+                            pass
+                        else:
+                            try:
+                                check_data = check_response.json()
+                                if check_data.get("isDuplicate", False):
+                                    st.error("이미 등록된 차량번호입니다. 중복 등록은 불가능합니다.")
+                                    st.session_state.processing = False
+                                    st.stop()
+                            except requests.exceptions.JSONDecodeError:
+                                if "Error" in response_text and not "rows in the range" in response_text:
+                                    st.error(f"서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
+                                    st.session_state.processing = False
+                                    st.stop()
+                    except requests.exceptions.JSONDecodeError:
+                        st.error(f"서버 응답을 처리하는 중 오류가 발생했습니다. 응답: {response_text}")
                         st.session_state.processing = False
                         st.stop()
-                
-                except requests.exceptions.RequestException as e:
-                    st.error(f"서버 연결 중 오류가 발생했습니다: {str(e)}")
+                else:
+                    st.error(f"서버 오류가 발생했습니다 (상태 코드: {check_response.status_code})")
                     st.session_state.processing = False
                     st.stop()
+            
+            except requests.exceptions.RequestException as e:
+                st.error(f"서버 연결 중 오류가 발생했습니다: {str(e)}")
+                st.session_state.processing = False
+                st.stop()
 
             # 중복이 아닌 경우 데이터 전송
             try:
