@@ -12,100 +12,99 @@ st.set_page_config(page_title="PLC 주차 등록", layout="wide")
 # CSS 스타일 정의
 st.markdown("""
 <style>
+    /* 전체 페이지 기본 폰트 설정 */
+    * {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
     /* 전체 페이지 배경색 설정 */
     .stApp {
         background-color: #323648 !important;
     }
     
-    /* 모든 div 요소에 대한 배경색 설정 */
-    div.stMarkdown,
-    div.stButton,
-    div.stTextInput,
-    div.row-widget,
-    div.stAlert,
-    div[data-testid="stMarkdownContainer"],
-    div[data-testid="stVerticalBlock"] {
-        background-color: #323648 !important;
+    /* 모든 텍스트 요소에 대한 기본 스타일 */
+    .stMarkdown p, .stText, .stTextInput label, .stButton, div[data-testid="stMarkdownContainer"] p {
+        color: white !important;
+        font-size: 20px !important;
+        line-height: 1.6 !important;
     }
     
-    /* 로고 컨테이너 */
-    .logo-container {
-        text-align: center;
-        padding: 20px 0;
-        background-color: #323648 !important;
+    /* 제목 스타일 */
+    h1, h2, h3, .title {
+        color: white !important;
+        font-size: 42px !important;
+        font-weight: bold !important;
+        padding: 20px 0 !important;
+        text-align: center !important;
     }
     
     /* 입력 필드 스타일 */
     .stTextInput > div > div > input {
         background-color: #4F6380 !important;
         color: white !important;
+        font-size: 20px !important;
+        padding: 15px !important;
     }
     
     /* 버튼 스타일 */
     .stButton > button {
         background-color: #4F6380 !important;
         color: white !important;
-    }
-    
-    /* 경고/성공 메시지 스타일 */
-    .stAlert {
-        background-color: #4F6380 !important;
-        color: white !important;
-    }
-    
-    /* 기타 텍스트 색상 */
-    .stMarkdown {
-        color: white !important;
-    }
-    
-    /* 제목 스타일 */
-    .title {
-        color: white !important;
-        font-size: 42px;
-        font-weight: bold;
-        padding: 20px 0;
-        text-align: center;
-        background-color: #4F6380 !important;
-        border-radius: 10px;
-        margin-bottom: 30px;
-    }
-    
-    /* iframe 배경색 설정 */
-    iframe {
-        background-color: #323648 !important;
+        font-size: 20px !important;
+        padding: 15px 30px !important;
     }
     
     /* 로딩 스피너 컨테이너 스타일 */
     .stSpinner {
-        text-align: center;
-        padding: 20px;
+        text-align: center !important;
+        padding: 40px !important;
         background-color: rgba(79, 99, 128, 0.1) !important;
-        border-radius: 10px;
-        margin: 20px 0;
+        border-radius: 10px !important;
+        margin: 40px 0 !important;
+    }
+    
+    /* 스피너 크기 증가 */
+    .stSpinner > div {
+        width: 5rem !important;
+        height: 5rem !important;
     }
     
     /* 성공 메시지 스타일 */
     .success-message {
-        text-align: center;
-        padding: 30px;
+        text-align: center !important;
+        padding: 30px !important;
         background-color: #4CAF50 !important;
-        color: white;
-        border-radius: 10px;
-        font-size: 24px;
-        margin: 20px 0;
-        animation: fadeIn 0.5s ease-in;
+        color: white !important;
+        border-radius: 10px !important;
+        font-size: 28px !important;
+        margin: 20px 0 !important;
+        animation: fadeIn 0.5s ease-in !important;
     }
     
+    /* 스피너 텍스트 스타일 */
+    .spinner-text {
+        font-size: 28px !important;
+        color: white !important;
+        margin-top: 20px !important;
+    }
+    
+    /* 경고/에러 메시지 스타일 */
+    .stAlert {
+        font-size: 20px !important;
+        padding: 20px !important;
+    }
+    
+    /* 애니메이션 */
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(-20px); }
         to { opacity: 1; transform: translateY(0); }
     }
     
-    /* 스피너 텍스트 스타일 */
-    .spinner-text {
-        font-size: 24px;
-        color: white;
-        margin-top: 10px;
+    /* 안내 메시지 강조 */
+    .important-notice {
+        font-size: 22px !important;
+        color: #FFD700 !important;
+        margin: 10px 0 !important;
     }
 </style>
 """, unsafe_allow_html=True)
