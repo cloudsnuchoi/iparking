@@ -195,11 +195,7 @@ with col2:
     st.markdown('<div class="important-notice">등록 시 주차 3시간 무료제공됩니다.</div>', unsafe_allow_html=True)
 
 # 처리 중일 때 스피너 표시 (버튼 바로 아래)
-if st.session_state.processing:
-    st.markdown('<div style="text-align: center; margin: 20px 0;">', unsafe_allow_html=True)
-    with st.spinner(""):
-        st.markdown('<div class="spinner-text">차량을 등록하는 중입니다...</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+spinner_placeholder = st.empty()
 
 # 차량번호 입력 안내 메시지
 st.markdown('<div class="important-notice">✔️ 차량번호 입력 예시:</div>', unsafe_allow_html=True)
@@ -218,6 +214,13 @@ if submit and not st.session_state.submitted and not st.session_state.processing
         try:
             # 처리 중 상태로 설정
             st.session_state.processing = True
+            
+            # 스피너와 메시지 표시
+            with spinner_placeholder:
+                st.markdown('<div style="text-align: center; margin: 20px 0;">', unsafe_allow_html=True)
+                with st.spinner(""):
+                    st.markdown('<div class="spinner-text">차량을 등록하는 중입니다...</div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
             
             # 중복 체크 요청
             try:
