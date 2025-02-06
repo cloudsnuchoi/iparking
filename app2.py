@@ -74,6 +74,39 @@ st.markdown("""
     iframe {
         background-color: #323648 !important;
     }
+    
+    /* 로딩 스피너 컨테이너 스타일 */
+    .stSpinner {
+        text-align: center;
+        padding: 20px;
+        background-color: rgba(79, 99, 128, 0.1) !important;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+    
+    /* 성공 메시지 스타일 */
+    .success-message {
+        text-align: center;
+        padding: 30px;
+        background-color: #4CAF50 !important;
+        color: white;
+        border-radius: 10px;
+        font-size: 24px;
+        margin: 20px 0;
+        animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* 스피너 텍스트 스타일 */
+    .spinner-text {
+        font-size: 24px;
+        color: white;
+        margin-top: 10px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -180,45 +213,49 @@ if submit and not st.session_state.submitted and not st.session_state.processing
             # 처리 중 상태로 설정
             st.session_state.processing = True
             
-            # 중복 체크 요청
-            try:
-                check_response = requests.get(
-                    "https://script.google.com/macros/s/AKfycbwCPyjV8cUAvopipzo9B2L-fU5zh2EwmUQ2nApPyurw8zQns5hT5_NeCbBWQW_8RDEITg/exec",
-                    params={"action": "checkDuplicate", "carNumber": standardized_number}
-                )
+            # 중앙에 큰 스피너 표시
+            with st.spinner(""):
+                st.markdown('<div class="spinner-text">차량을 등록하는 중입니다...</div>', unsafe_allow_html=True)
                 
-                if check_response.status_code == 200:
-                    try:
-                        response_text = check_response.text
-                        # 스프레드시트가 비어있는 경우 (첫 번째 등록인 경우)
-                        if "Exception: The number of rows in the range must be at least 1" in response_text:
-                            # 첫 번째 등록이므로 중복 체크를 통과하고 계속 진행
-                            pass
-                        else:
-                            try:
-                                check_data = check_response.json()
-                                if check_data.get("isDuplicate", False):
-                                    st.error("이미 등록된 차량번호입니다. 중복 등록은 불가능합니다.")
-                                    st.session_state.processing = False
-                                    st.stop()
-                            except requests.exceptions.JSONDecodeError:
-                                if "Error" in response_text and not "rows in the range" in response_text:
-                                    st.error(f"서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
-                                    st.session_state.processing = False
-                                    st.stop()
-                    except requests.exceptions.JSONDecodeError:
-                        st.error(f"서버 응답을 처리하는 중 오류가 발생했습니다. 응답: {response_text}")
+                # 중복 체크 요청
+                try:
+                    check_response = requests.get(
+                        "https://script.google.com/macros/s/AKfycbwCPyjV8cUAvopipzo9B2L-fU5zh2EwmUQ2nApPyurw8zQns5hT5_NeCbBWQW_8RDEITg/exec",
+                        params={"action": "checkDuplicate", "carNumber": standardized_number}
+                    )
+                    
+                    if check_response.status_code == 200:
+                        try:
+                            response_text = check_response.text
+                            # 스프레드시트가 비어있는 경우 (첫 번째 등록인 경우)
+                            if "Exception: The number of rows in the range must be at least 1" in response_text:
+                                # 첫 번째 등록이므로 중복 체크를 통과하고 계속 진행
+                                pass
+                            else:
+                                try:
+                                    check_data = check_response.json()
+                                    if check_data.get("isDuplicate", False):
+                                        st.error("이미 등록된 차량번호입니다. 중복 등록은 불가능합니다.")
+                                        st.session_state.processing = False
+                                        st.stop()
+                                except requests.exceptions.JSONDecodeError:
+                                    if "Error" in response_text and not "rows in the range" in response_text:
+                                        st.error(f"서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
+                                        st.session_state.processing = False
+                                        st.stop()
+                        except requests.exceptions.JSONDecodeError:
+                            st.error(f"서버 응답을 처리하는 중 오류가 발생했습니다. 응답: {response_text}")
+                            st.session_state.processing = False
+                            st.stop()
+                    else:
+                        st.error(f"서버 오류가 발생했습니다 (상태 코드: {check_response.status_code})")
                         st.session_state.processing = False
                         st.stop()
-                else:
-                    st.error(f"서버 오류가 발생했습니다 (상태 코드: {check_response.status_code})")
+                
+                except requests.exceptions.RequestException as e:
+                    st.error(f"서버 연결 중 오류가 발생했습니다: {str(e)}")
                     st.session_state.processing = False
                     st.stop()
-            
-            except requests.exceptions.RequestException as e:
-                st.error(f"서버 연결 중 오류가 발생했습니다: {str(e)}")
-                st.session_state.processing = False
-                st.stop()
 
             # 중복이 아닌 경우 데이터 전송
             try:
@@ -233,7 +270,7 @@ if submit and not st.session_state.submitted and not st.session_state.processing
                 if response.status_code == 200:
                     response_text = response.text
                     if "Error" not in response_text:
-                        st.success("차량이 등록되었습니다! 🎉")
+                        st.markdown('<div class="success-message">✨ 차량이 성공적으로 등록되었습니다! ✨</div>', unsafe_allow_html=True)
                         st.session_state.submitted = True
                     else:
                         st.error(f"등록 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
@@ -242,14 +279,13 @@ if submit and not st.session_state.submitted and not st.session_state.processing
             except requests.exceptions.RequestException as e:
                 st.error(f"데이터 전송 중 오류가 발생했습니다: {str(e)}")
         finally:
-            # 처리가 완료되면 processing 상태를 False로 변경
             st.session_state.processing = False
     else:
         st.warning("모든 필드를 채워주세요.")
 
 # 제출 완료 후 메시지 표시
 if st.session_state.submitted:
-    st.info("이미 제출이 완료되었습니다. 추가 제출이 필요한 경우 페이지를 새로고침해주세요.")
+    st.markdown('<div class="success-message">이미 제출이 완료되었습니다. 추가 제출이 필요한 경우 페이지를 새로고침해주세요.</div>', unsafe_allow_html=True)
 
 # 빈 공간 추가
 st.write("")
