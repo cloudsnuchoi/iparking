@@ -70,6 +70,11 @@ st.markdown("""
         margin-bottom: 30px;
     }
     
+    /* Streamlit title 스타일 */
+    h1 {
+        color: white !important;
+    }
+    
     /* iframe 배경색 설정 */
     iframe {
         background-color: #323648 !important;
